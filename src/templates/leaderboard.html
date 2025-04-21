@@ -1,0 +1,15 @@
+<h1>Fastest Laps</h1>
+<table>
+    <tr><th>Name</th><th>Bike</th><th>Best Lap</th><th>Profile</th></tr>
+    {% for rider in riders %}
+        <tr>
+            <td>{{ rider.name }}</td>
+            <td>{{ rider.bike }}</td>
+            <td>{{ rider.best_lap }}</td>
+            <td><a href="/rider/{{ rider.id }}">View</a></td>
+        </tr>
+    {% endfor %}
+</table>
+
+<a href="/add_lap">Add a Lap (manual)</a>
+<a href="/">Back home</a>

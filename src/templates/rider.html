@@ -1,0 +1,9 @@
+<h2>{{ rider.name }}'s Profile</h2>
+<p>Bike: {{ rider.bike }}</p>
+<h3>Lap History:</h3>
+<ul>
+    {% for lap in rider_laps %}
+        <li>{{ lap.lap_time }}</li>
+    {% endfor %}
+</ul>
+<a href="/leaderboard">← Back to Leaderboard</a>

@@ -13,6 +13,17 @@ def init_db():
     print("🔧 INIT_DB: Running database creation...")
     with get_connection() as conn:
         cursor = conn.cursor()
+
+        print("🔧 Creating users table...")
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                profile_pic TEXT
+            )
+        """)
+
         print("🔧 Creating riders table...")
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS riders (
@@ -22,6 +33,7 @@ def init_db():
                 best_lap TEXT
             )
         """)
+
         print("🔧 Creating laps table...")
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS laps (
@@ -31,6 +43,7 @@ def init_db():
                 FOREIGN KEY (rider_id) REFERENCES riders (id)
             )
         """)
+
         conn.commit()
         print("✅ DB Initialized and committed.")
 

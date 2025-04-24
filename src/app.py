@@ -1,39 +1,29 @@
 import os
 import sys
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask
+from flask_login import LoginManager
+
+
+# Add src directory to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
-from db import get_connection, init_db, get_rider_by_id, get_laps_by_rider, insert_lap, get_all_riders
+from user import User
+from db import init_db
+from routes import routes
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'dev_secret_key')
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+# Setup Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'routes.login'
 
-@app.route('/leaderboard')
-def leaderboard():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM riders ORDER BY best_lap ASC")
-    riders = cursor.fetchall()
-    return render_template('leaderboard.html', riders=riders)
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get(user_id)
 
-@app.route('/rider/<int:rider_id>')
-def rider_profile(rider_id):
-    rider = get_rider_by_id(rider_id)
-    rider_laps = get_laps_by_rider(rider_id)
-    return render_template('rider.html', rider=rider, rider_laps=rider_laps)
-
-@app.route('/add_lap', methods=['GET', 'POST'])
-def add_lap():
-    if request.method == 'POST':
-        rider_id = request.form['rider_id']
-        lap_time = request.form['lap_time']
-        insert_lap(rider_id, lap_time)
-        return redirect(url_for('leaderboard'))
-
-    riders = get_all_riders()
-    return render_template('add_lap.html', riders=riders)
+# Register Blueprint
+app.register_blueprint(routes)
 
 if __name__ == '__main__':
     init_db()

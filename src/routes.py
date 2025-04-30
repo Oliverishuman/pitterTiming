@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from user import User
-from db import get_connection, get_rider_by_id, get_laps_by_rider, insert_lap, get_all_riders
+from db import get_connection, get_rider_by_id, get_laps_by_rider, insert_lap, get_all_riders, insert_rider, get_rider_by_user_id
 
 routes = Blueprint('routes', __name__)
 
@@ -31,7 +31,13 @@ def register():
         username = request.form['username']
         password = request.form['password']
         hashed_password = generate_password_hash(password)
-        User.create(username, hashed_password)
+
+        # Create User
+        user = User.create(username, hashed_password)
+
+        # Immediately create associated Rider
+        insert_rider(user.id, username)
+
         return redirect(url_for('routes.login'))
     return render_template('register.html')
 
@@ -73,11 +79,16 @@ def rider_profile(rider_id):
 @routes.route('/add_lap', methods=['GET', 'POST'])
 @login_required
 def add_lap():
-    if request.method == 'POST':
-        rider_id = request.form['rider_id']
-        lap_time = request.form['lap_time']
-        insert_lap(rider_id, lap_time)
-        return redirect(url_for('routes.leaderboard'))
+    # Find the logged-in user's Rider
+    rider = get_rider_by_user_id(current_user.id)
 
-    riders = get_all_riders()
-    return render_template('add_lap.html', riders=riders)
+    if request.method == 'POST':
+        lap_time = request.form['lap_time']
+
+        if rider:
+            insert_lap(rider['id'], lap_time)
+            return redirect(url_for('routes.leaderboard'))
+        else:
+            return "Rider profile not found.", 400
+
+    return render_template('add_lap.html', rider=rider)

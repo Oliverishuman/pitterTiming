@@ -42,8 +42,15 @@ class User(UserMixin):
     def create(username, hashed_password):
         with get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
+            cursor.execute(
+                "INSERT INTO users (username, password) VALUES (?, ?)",
+                (username, hashed_password)
+            )
             conn.commit()
+            user_id = cursor.lastrowid  # <-- Get the ID of the newly inserted user
+
+        # Return a new User object with that ID
+        return User(user_id, username, hashed_password)
 
     @staticmethod
     def update_profile(user_id, new_username):

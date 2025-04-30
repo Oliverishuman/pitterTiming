@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<h2>Add New Lap</h2>
+<head>
+    <meta charset="UTF-8">
+    <title>Add Lap Time</title>
+</head>
+<h2>Add New Lap for {{ rider.name }}</h2>
 <form method="POST">
-    <label for="rider_id">Rider:</label>
-    <input type="text" name="rider_id"><br><br>
-
-    <label for="lap_time">Lap Time (mm:ss.SS):</label>
-    <input type="text" name="lap_time"><br><br>
-
-    <button type="submit">Submit</button>
+    
+    <label for="lap_time">Lap Time (seconds):</label>
+    <input type="text" id="lap_time" name="lap_time" required>
+    
+    <button type="submit">Submit Lap</button>
 </form>
 
 <a href="/leaderboard">← Back to Leaderboard</a>

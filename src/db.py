@@ -28,8 +28,9 @@ def init_db():
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS riders (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
                 name TEXT NOT NULL,
-                bike TEXT NOT NULL,
+                bike TEXT,
                 best_lap TEXT
             )
         """)
@@ -60,13 +61,44 @@ def get_laps_by_rider(rider_id):
         return cursor.fetchall()
 
 def insert_lap(rider_id, lap_time):
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO laps (rider_id, lap_time) VALUES (?, ?)", (rider_id, lap_time))
-        conn.commit()
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT INTO laps (rider_id, lap_time) VALUES (?, ?)", (rider_id, lap_time)
+    )
+
+    cursor.execute(
+        "SELECT MIN(lap_time) FROM laps WHERE rider_id = ?", ((rider_id,))
+    )
+    best_lap = cursor.fetchone()[0]
+
+    cursor.execute(
+        "UPDATE riders SET best_lap = ? WHERE  id = ?", (best_lap, rider_id)
+    )
+
+    conn.commit()
 
 def get_all_riders():
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM riders")
         return cursor.fetchall()
+    
+def insert_rider(user_id, name):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO riders (user_id, name, best_lap) VALUES (?, ?, ?)",
+        (user_id, name, None)
+    )
+    conn.commit()
+
+def get_rider_by_user_id(user_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT * FROM riders WHERE user_id = ?",
+        (user_id,)
+    )
+    return cursor.fetchone()

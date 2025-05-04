@@ -19,8 +19,7 @@ def init_db():
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL,
-                profile_pic TEXT
+                password TEXT NOT NULL
             )
         """)
 
@@ -30,8 +29,10 @@ def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER,
                 name TEXT NOT NULL,
+                profile_pic TEXT,
                 bike TEXT,
-                best_lap TEXT
+                best_lap TEXT,
+                FOREIGN KEY (user_id) REFERENCES users(id)
             )
         """)
 
@@ -67,12 +68,10 @@ def insert_lap(rider_id, lap_time):
     cursor.execute(
         "INSERT INTO laps (rider_id, lap_time) VALUES (?, ?)", (rider_id, lap_time)
     )
-
     cursor.execute(
         "SELECT MIN(lap_time) FROM laps WHERE rider_id = ?", ((rider_id,))
     )
     best_lap = cursor.fetchone()[0]
-
     cursor.execute(
         "UPDATE riders SET best_lap = ? WHERE  id = ?", (best_lap, rider_id)
     )
@@ -85,13 +84,15 @@ def get_all_riders():
         cursor.execute("SELECT * FROM riders")
         return cursor.fetchall()
     
-def insert_rider(user_id, name):
+def insert_rider(user_id, name, bike, profile_pic):
+    """
+    Insert a new rider into the database.
+    This is the proper place to insert user profile information such as bike and profile_pic.
+    """
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO riders (user_id, name, best_lap) VALUES (?, ?, ?)",
-        (user_id, name, None)
-    )
+    cursor.execute("INSERT INTO riders (user_id, name, bike, profile_pic, best_lap) VALUES (?, ?, ?, ?, ?)",
+        (user_id, name, bike, profile_pic, None))
     conn.commit()
 
 def get_rider_by_user_id(user_id):
@@ -102,3 +103,17 @@ def get_rider_by_user_id(user_id):
         (user_id,)
     )
     return cursor.fetchone()
+
+# Update rider profile information (name, bike, profile_pic) for a given user_id
+def update_rider_profile(user_id, name, bike, profile_pic):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE riders SET name = ?, bike = ?, profile_pic = ? WHERE user_id = ?",
+        (name, bike, profile_pic, user_id)
+    )
+    cursor.execute(
+        "UPDATE users SET username = ? WHERE id = ?",
+        (name, user_id)
+    )
+    conn.commit()

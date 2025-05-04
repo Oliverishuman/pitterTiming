@@ -13,6 +13,11 @@ from routes import routes
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev_secret_key')
 
+UPLOAD_FOLDER = os.path.join("static", "profile_pics")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 # Setup Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)

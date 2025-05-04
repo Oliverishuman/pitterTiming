@@ -1,9 +1,11 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+import os
 
 from user import User
-from db import get_connection, get_rider_by_id, get_laps_by_rider, insert_lap, get_all_riders, insert_rider, get_rider_by_user_id
+from db import get_connection, get_rider_by_id, get_laps_by_rider, insert_lap, get_all_riders, insert_rider, get_rider_by_user_id, get_rider_by_user_id, update_rider_profile
 
 routes = Blueprint('routes', __name__)
 
@@ -36,7 +38,7 @@ def register():
         user = User.create(username, hashed_password)
 
         # Immediately create associated Rider
-        insert_rider(user.id, username)
+        insert_rider(user.id, username, "", None)
 
         return redirect(url_for('routes.login'))
     return render_template('register.html')
@@ -52,14 +54,6 @@ def logout():
 def dashboard():
     return render_template('dashboard.html', user=current_user)
 
-@routes.route('/edit_profile', methods=['GET', 'POST'])
-@login_required
-def edit_profile():
-    if request.method == 'POST':
-        new_username = request.form['username']
-        User.update_profile(current_user.id, new_username)
-        return redirect(url_for('routes.dashboard'))
-    return render_template('edit_profile.html', user=current_user)
 
 @routes.route('/leaderboard')
 @login_required
@@ -92,3 +86,42 @@ def add_lap():
             return "Rider profile not found.", 400
 
     return render_template('add_lap.html', rider=rider)
+
+@routes.route('/profile')
+def profile():
+    if not current_user.is_authenticated:
+        return redirect(url_for('routes.login'))
+
+    user_id = current_user.id
+    
+    rider = get_rider_by_user_id(user_id)
+    return render_template('edit_profile.html', rider=rider)
+
+@routes.route('/update_profile', methods=['POST'])
+def update_profile():
+    if not current_user.is_authenticated:
+        return redirect(url_for('routes.login'))
+
+    user_id = current_user.id
+    name = request.form['name']
+    bike = request.form['bike']
+    username = name
+    profile_pic = None
+    id = user_id
+
+    if 'profile_pic' in request.files:
+        file = request.files['profile_pic']
+        if file and file.filename:
+            upload_folder = os.path.join(os.path.dirname(__file__), 'static', 'profile_pics')
+            os.makedirs(upload_folder, exist_ok=True)
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(upload_folder, filename)
+            file.save(file_path)
+
+            profile_pic = f"profile_pics/{filename}"  # store this in DB
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET username = ? WHERE id = ?", (username, id))
+    conn.commit()
+    update_rider_profile(user_id, name, bike, profile_pic)
+    return redirect(url_for('routes.profile'))

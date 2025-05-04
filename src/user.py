@@ -12,11 +12,10 @@ def get_connection():
     return conn
 
 class User(UserMixin):
-    def __init__(self, id, username, password, profile_pic=None):
+    def __init__(self, id, username, password):
         self.id = id
         self.username = username
         self.password = password
-        self.profile_pic = profile_pic
 
     @staticmethod
     def get(user_id):
@@ -25,7 +24,7 @@ class User(UserMixin):
             cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
             row = cursor.fetchone()
             if row:
-                return User(row["id"], row["username"], row["password"], row["profile_pic"])
+                return User(row["id"], row["username"], row["password"])
             return None
 
     @staticmethod
@@ -35,7 +34,7 @@ class User(UserMixin):
             cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
             row = cursor.fetchone()
             if row:
-                return User(row["id"], row["username"], row["password"], row["profile_pic"])
+                return User(row["id"], row["username"], row["password"])
             return None
 
     @staticmethod
@@ -51,10 +50,3 @@ class User(UserMixin):
 
         # Return a new User object with that ID
         return User(user_id, username, hashed_password)
-
-    @staticmethod
-    def update_profile(user_id, new_username):
-        with get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("UPDATE users SET username = ? WHERE id = ?", (new_username, user_id))
-            conn.commit()

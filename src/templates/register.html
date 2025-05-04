@@ -3,16 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <title>Register</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-  <h2>Create Account</h2>
-  <form method="post">
-    <label for="username">Username:</label>
-    <input type="text" name="username" required><br>
-    <label for="password">Password:</label>
-    <input type="password" name="password" required><br>
-    <button type="submit">Register</button>
-  </form>
-  <p>Already have an account? <a href="/login">Login here</a></p>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center px-4 py-8">
+  <div class="bg-white shadow-md rounded-lg p-8 w-full max-w-md text-center">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Create Account</h2>
+
+    <form method="post" class="space-y-4 text-left">
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+        <input type="text" name="username" required class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200">
+      </div>
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <input type="password" name="password" required class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200">
+      </div>
+      <button type="submit" class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition">Register</button>
+    </form>
+
+    <p class="mt-4 text-sm text-gray-600">Already have an account? <a href="/login" class="text-blue-500 hover:underline">Login here</a></p>
+  </div>
 </body>
 </html>

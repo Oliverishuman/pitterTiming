@@ -1,15 +1,46 @@
-<h1>Fastest Laps</h1>
-<table>
-    <tr><th>Name</th><th>Bike</th><th>Best Lap</th><th>Profile</th></tr>
-    {% for rider in riders %}
-        <tr>
-            <td>{{ rider.name }}</td>
-            <td>{{ rider.bike }}</td>
-            <td>{{ rider.best_lap }}</td>
-            <td><a href="/rider/{{ rider.id }}">View</a></td>
-        </tr>
-    {% endfor %}
-</table>
-
-<a href="/add_lap">Add a Lap</a>
-<a href="/dashboard">Back home</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center px-4 py-8">
+  <div class="bg-white shadow-md rounded-lg p-6 w-full max-w-4xl">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">🏁 Fastest Laps 🏁</h1>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white border border-gray-300 rounded-md">
+        <thead>
+          <tr class="bg-gray-200 text-gray-700">
+            <th class="py-2 px-4 border-b text-left">Name</th>
+            <th class="py-2 px-4 border-b text-left">Bike</th>
+            <th class="py-2 px-4 border-b text-left">Profile Pic</th>
+            <th class="py-2 px-4 border-b text-left">Best Lap</th>
+            <th class="py-2 px-4 border-b text-left">Profile</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rider in riders %}
+          <tr class="hover:bg-gray-50">
+            <td class="py-2 px-4 border-b">
+                {% if rider.profile_pic %}
+                  <img src="{{ url_for('static', filename=rider.profile_pic) }}" alt="Profile Picture" class="w-12 h-12 object-cover rounded-full">
+                {% else %}
+                  <img src="{{ url_for('static', filename='profile_pics/sampleUser.jpg') }}" alt="Default Profile Picture" class="w-12 h-12 object-cover rounded-full">
+                {% endif %}
+            </td>
+            <td class="py-2 px-4 border-b">{{ rider.name }}</td>
+            <td class="py-2 px-4 border-b">{{ rider.bike }}</td>
+            <td class="py-2 px-4 border-b">{{ rider.best_lap }}</td>
+            <td class="py-2 px-4 border-b">
+              <a href="/rider/{{ rider.id }}" class="text-blue-500 hover:underline">View</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="mt-6 flex justify-between text-blue-500">
+      <a href="/dashboard" class="hover:underline">Back home</a>
+      <a href="/add_lap" class="hover:underline">Add a Lap</a>
+    </div>
+  </div>
+</body>

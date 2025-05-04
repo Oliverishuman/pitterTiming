@@ -3,15 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Add Lap Time</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<h2>Add New Lap for {{ rider.name }}</h2>
-<form method="POST">
-    
-    <label for="lap_time">Lap Time (seconds):</label>
-    <input type="text" id="lap_time" name="lap_time" required>
-    
-    <button type="submit">Submit Lap</button>
-</form>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center px-4 py-8">
+  <div class="bg-white shadow-md rounded-lg p-8 w-full max-w-md text-center">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Add New Lap for {{ rider.name }}</h2>
 
-<a href="/leaderboard">← Back to Leaderboard</a>
-<a href="/dashboard">Back home</a>
+    <form method="POST" class="space-y-4 text-left">
+      <div>
+        <label for="lap_time" class="block text-sm font-medium text-gray-700">Lap Time (seconds)</label>
+        <input type="text" id="lap_time" name="lap_time" required class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200">
+      </div>
+      <button type="submit" class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition">Submit Lap</button>
+    </form>
+
+    <div class="mt-6 flex justify-between text-blue-500">
+      <a href="/leaderboard" class="hover:underline">← Back to Leaderboard</a>
+      <a href="/dashboard" class="hover:underline">Back home</a>
+    </div>
+  </div>
+</body>

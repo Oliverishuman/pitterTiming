@@ -119,9 +119,11 @@ def update_profile():
             file.save(file_path)
 
             profile_pic = f"profile_pics/{filename}"  # store this in DB
+            
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("UPDATE users SET username = ? WHERE id = ?", (username, id))
     conn.commit()
+
     update_rider_profile(user_id, name, bike, profile_pic)
     return redirect(url_for('routes.profile'))

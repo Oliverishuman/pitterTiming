@@ -16,6 +16,20 @@
     {% endif %}
 
     <form action="/update_profile" method="POST" enctype="multipart/form-data" class="space-y-4 text-left">
+      <label class="block text-sm font-medium text-gray-700">Profile Pic</label>
+      {% if rider.profile_pic == null%}
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Profile Picture</label>
+        <input type="file" name="profile_pic" class="w-full mt-1">
+      </div>
+      {% else %}
+      <div class="text-sm mt-2">
+        <a href="#" onclick="document.getElementById('fileInput').click(); return false;" class="text-blue-600 hover:underline">
+          Update Profile Picture
+        </a>
+        <input type="file" id="fileInput" name="profile_pic" class="hidden">
+      </div>
+      {% endif %}
       <div>
         <label class="block text-sm font-medium text-gray-700">Name</label>
         <input type="text" name="name" value="{{ rider.name }}" required class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200">
@@ -23,10 +37,6 @@
       <div>
         <label class="block text-sm font-medium text-gray-700">Bike</label>
         <input type="text" name="bike" value="{{ rider.bike }}" class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Profile Picture</label>
-        <input type="file" name="profile_pic" class="w-full mt-1">
       </div>
       <button type="submit" class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition">Update Profile</button>
     </form>
